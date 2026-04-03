@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Swaa Nepal</title>
+
+    <style>
+        body {
+            font-family: Arial;
+            margin: 0;
+            background: #f5f5f5;
+        }
+
+        header {
+            background: #1b4332;
+            color: white;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .container {
+            padding: 20px;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit,minmax(250px,1fr));
+            gap: 20px;
+        }
+
+        .col-3 {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+
+            .card img {
+                width: 100%;
+                height: 220px;
+                object-fit: cover;
+            }
+
+        .card-content {
+            padding: 15px;
+        }
+
+        button {
+            width: 100%;
+            padding: 10px;
+            background: #2d6a4f;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        input {
+            width: 93%;
+            padding: 10px;
+            margin: 10px 0;
+        }
+
+        .footer {
+            background: #1b4332;
+            color: white;
+            text-align: center;
+            padding: 20px;
+            margin-top: 30px;
+        }
+
+        .logo {
+            width: 90px;
+            border-radius: 50%;
+            background: white;
+            padding: 8px;
+        }
+        /* MODAL STYLE */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.6);
+        }
+
+        .modal-content {
+            background: white;
+            margin: 8% auto;
+            padding: 20px;
+            border-radius: 10px;
+            width: 350px;
+            position: relative;
+        }
+
+        .close {
+            position: absolute;
+            right: 15px;
+            top: 10px;
+            font-size: 22px;
+            cursor: pointer;
+        }
+
+        .plant-info {
+            background: #e9f5ee;
+            padding: 10px;
+            border-radius: 6px;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <!-- CHECKOUT POPUP -->
+    <div id="checkoutModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+
+            <h2>Checkout</h2>
+
+            <div class="plant-info">
+                <p id="plant"></p>
+            </div>
+
+            <input type="text" id="name" placeholder="Enter your name">
+            <input type="text" id="phone" placeholder="Enter mobile number">
+
+            <select id="payment">
+                <option value="">Select Payment Mode</option>
+                <option value="Cash on Delivery">Cash on Delivery</option>
+                <option value="eSewa">eSewa</option>
+                <option value="Khalti">Khalti</option>
+            </select>
+
+            <input type="number" id="amount" placeholder="Enter amount">
+
+            <button onclick="placeOrder()">Pay & Order</button>
+        </div>
+    </div>
+
+    <header>
+        <img src="logo.png" alt="Swaa Nepal Logo" class="logo">
+        <h1>Swaa Nepal</h1>
+        <p>Let’s Grow Something Beautiful Together, I mean plant ;) 🌱</p>
+    </header>
+
+    <div class="container">
+        <input type="text" id="search" placeholder="Search plants..." onkeyup="searchPlant()">
+
+        <div class="grid col-3" id="plants">
+            <script>
+                const plantList = [
+                    { name: 'Monstera', price: 1500, img: 'https://images.unsplash.com/photo-1501004318641-b39e6451bec6' },
+                    { name: 'Aloe Vera', price: 500, img: 'https://images.unsplash.com/photo-1466692476868-aef1dfb1e735' },
+                    { name: 'Snake Plant', price: 800, img: 'https://images.unsplash.com/photo-1502741338009-cac2772e18bc' },
+                    { name: 'Peace Lily', price: 1200, img: 'https://images.unsplash.com/photo-1524594154908-edd34c8dcf43' },
+                    { name: 'Fiddle Leaf Fig', price: 2000, img: 'https://images.unsplash.com/photo-1509423350716-97f2360af5e4' },
+                    { name: 'Rubber Plant', price: 1800, img: 'https://images.unsplash.com/photo-1523419409543-5c1c6c2c0c94' },
+                    { name: 'Cactus', price: 400, img: 'https://images.unsplash.com/photo-1501004318641-b39e6451bec6' },
+                    { name: 'Bonsai', price: 3000, img: 'https://images.unsplash.com/photo-1504198458649-3128b932f49b' },
+                    { name: 'Fern', price: 700, img: 'https://images.unsplash.com/photo-1524594154908-edd34c8dcf43' },
+                    { name: 'Succulent', price: 600, img: 'https://images.unsplash.com/photo-1502741338009-cac2772e18bc' }
+                ];
+
+                const container = document.getElementById('plants');
+                plantList.forEach(p => {
+                    container.innerHTML += `
+                            <div class="card">
+                            <img src="${p.img}">
+                                <div class="card-content">
+                            <h3>${p.name}</h3>
+                                <p>NPR ${p.price}</p>
+                                <button onclick="buyNow('${p.name}',${p.price})">Add to Cart</button>
+                            </div>
+                    </div>`;
+                });
+
+                let selectedPlant = {};
+
+                function buyNow(name, price) {
+                    selectedPlant = { name, price };
+                    document.getElementById('plant').innerText = name + ' - NPR ' + price;
+                    document.getElementById('amount').value = price;
+                    document.getElementById('checkoutModal').style.display = 'block';
+                }
+
+                function closeModal() {
+                    document.getElementById('checkoutModal').style.display = 'none';
+                }
+
+                function searchPlant() {
+                    let input = document.getElementById('search').value.toLowerCase();
+                    let cards = document.getElementsByClassName('card');
+                    for (let i = 0; i < cards.length; i++) {
+                        cards[i].style.display = cards[i].innerText.toLowerCase().includes(input) ? '' : 'none';
+                    }
+                }
+
+                function placeOrder() {
+                    let name = document.getElementById('name').value;
+                    let phone = document.getElementById('phone').value;
+                    let payment = document.getElementById('payment').value;
+                    let amount = document.getElementById('amount').value;
+
+                    if (!name || !phone || !payment || !amount) {
+                        alert("Please fill all details");
+                        return;
+                    }
+
+                    let message = `Order Details:%0A
+                    Plant: ${selectedPlant.name}%0A
+                    Amount: NPR ${amount}%0A
+                    Payment Mode: ${payment}%0A
+                    Customer Name: ${name}%0A
+                    Mobile: ${phone}`;
+
+                    window.open(`https://wa.me/9779843365880?text=${message}`, "_blank");
+
+                    closeModal();
+                }
+            </script>
+        </div>
+    </div>
+
+    <div class="footer">
+        <h3>Contact Information</h3>
+        <p>Name: Sunil Veja</p>
+        <p>Email: veja123@gmail.com</p>
+        <p>Address: Nayabazar, Kathmandu</p>
+    </div>
+
+</body>
+</html>
