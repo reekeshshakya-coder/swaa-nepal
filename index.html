@@ -232,14 +232,21 @@ input, select {
 <div class="grid" id="plants"></div>
 </div>
 
-<!-- FOOTER -->
 <div class="footer">
     <h3>Contact Information</h3>
     <p>Name: Sunil Shahi</p>
     <p>Email: suhil.shahi3@gmail.com</p>
     <p>Address: Nayabazar, Kathmandu</p>
-</div>
 
+    <button onclick="openMap()">📍 View Location</button>
+
+    <iframe
+        src="https://www.google.com/maps?q=27.723015149068242,85.3041695460239&output=embed"
+        width="100%"
+        height="200"
+        style="border:0; margin-top:10px; border-radius:10px;">
+    </iframe>
+</div>
 <script>
 const plantList = [
     { name: 'Monstera', price: 500, img: 'https://plantersplace.com/wp-content/uploads/2022/08/20200309_110255-300x300.jpg' },
