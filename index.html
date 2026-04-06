@@ -335,6 +335,15 @@ function closeImage(){
 function openWhatsApp(){
     window.open("https://wa.me/9779843365880");
 }
+    function searchPlant() {
+    let input = document.getElementById('search').value.toLowerCase();
+    let cards = document.querySelectorAll('.card');
+
+    cards.forEach(card => {
+        let name = card.querySelector('h3').innerText.toLowerCase();
+        card.style.display = name.includes(input) ? 'block' : 'none';
+    });
+}
 </script>
 
 </body>
