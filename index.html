@@ -80,7 +80,7 @@ header {
     transform: translateY(-6px);
 }
 
-/* IMAGE HOVER EFFECT */
+/* IMAGE HOVER */
 .img-wrapper {
     position: relative;
     overflow: hidden;
@@ -94,7 +94,6 @@ header {
     cursor: pointer;
 }
 
-/* ZOOM EFFECT */
 .img-wrapper:hover img {
     transform: scale(1.15);
 }
@@ -111,9 +110,7 @@ header {
     display: flex;
     justify-content: center;
     align-items: center;
-    font-size: 18px;
     opacity: 0;
-    transition: 0.3s;
 }
 
 .img-wrapper:hover .overlay {
@@ -135,7 +132,7 @@ button {
 }
 
 input, select {
-    width: 20%;
+    width: 100%;
     padding: 10px;
     margin: 10px 0;
 }
@@ -167,12 +164,6 @@ input, select {
     cursor: pointer;
 }
 
-.plant-info {
-    background: #e9f5ee;
-    padding: 10px;
-    border-radius: 6px;
-}
-
 /* IMAGE POPUP */
 .image-popup {
     display: none;
@@ -191,21 +182,20 @@ input, select {
     border-radius: 10px;
 }
 
-.image-popup span {
-    position: absolute;
-    top: 20px;
-    right: 40px;
-    font-size: 30px;
-    color: white;
-    cursor: pointer;
-}
-
 /* FOOTER */
 .footer {
     background: #1b4332;
     color: white;
     text-align: center;
     padding: 20px;
+}
+
+/* MAP BUTTON */
+.map-btn {
+    margin-top: 10px;
+    padding: 10px;
+    background: #40916c;
+    border-radius: 5px;
 }
 
 /* WHATSAPP */
@@ -250,9 +240,7 @@ input, select {
         <span class="close" onclick="closeModal()">&times;</span>
         <h2>Checkout</h2>
 
-        <div class="plant-info">
-            <p id="plant"></p>
-        </div>
+        <p id="plant"></p>
 
         <input type="text" id="name" placeholder="Enter your name">
         <input type="text" id="phone" placeholder="Enter mobile number">
@@ -271,8 +259,7 @@ input, select {
 </div>
 
 <!-- IMAGE POPUP -->
-<div id="imgPopup" class="image-popup" onclick="closeImage()">
-    <span>&times;</span>
+<div id="imgPopup" class="image-popup" onclick="this.style.display='none'">
     <img id="popupImg">
 </div>
 
@@ -281,11 +268,23 @@ input, select {
 <div class="grid" id="plants"></div>
 </div>
 
+<!-- FOOTER WITH MAP -->
 <div class="footer">
     <h3>Contact Information</h3>
     <p>Name: Sunil Shahi</p>
     <p>Email: suhil.shahi3@gmail.com</p>
     <p>Address: Nayabazar, Kathmandu</p>
+
+    <!-- MAP BUTTON -->
+    <button class="map-btn" onclick="openMap()">📍 Open in Google Maps</button>
+
+    <!-- EMBEDDED MAP -->
+    <iframe
+        src="https://www.google.com/maps?q=27.723015149068242,85.3041695460239&output=embed"
+        width="100%"
+        height="200"
+        style="border:0; margin-top:10px; border-radius:10px;">
+    </iframe>
 </div>
 
 <!-- WHATSAPP -->
@@ -294,16 +293,11 @@ input, select {
 </div>
 
 <script>
+
 const plantList = [
     { name: 'Monstera', price: 500, img: 'https://plantersplace.com/wp-content/uploads/2022/08/20200309_110255-300x300.jpg' },
     { name: 'Aloe Vera', price: 500, img: 'https://www.almanac.com/sites/default/files/styles/or/public/image_nodes/aloe-vera-white-pot_sunwand24-ss_edit_0.jpg' },
-    { name: 'Snake Plant', price: 800, img: 'https://therubyplants.com.au/wp-content/uploads/2024/06/Snake-Plant-Superba-Sansevieria-Trifasciata-20cm-pot-1181x2048.jpg' },
-    { name: 'Peace Lily', price: 700, img: 'https://flowersinnepal.com/storage/7/conversions/peace-lilly-medium.webp' },
-    { name: 'Fiddle Leaf Fig', price: 200, img: 'https://gardenbetty.com/wp-content/uploads/2024/04/ficus-lyrata-fiddle-leaf-fig-01.jpg.webp' },
-    { name: 'Rubber Plant', price: 800, img: 'https://cdn.ecommercedns.uk/files/2/233342/6/13004296/img-1452.jpg' },
-    { name: 'Cactus', price: 400, img: 'https://images.unsplash.com/photo-1501004318641-b39e6451bec6' },
-    { name: 'Bonsai', price: 300, img: 'https://bonsaimary.com/wp-content/uploads/2023/11/Japanese-Maple-Bonsai-Acer-palmatum11.webp' },
-    { name: 'Fern', price: 700, img: 'https://th.bing.com/th/id/R.2fbcc64f6c7cd2b8ead060f65399261a?rik=yuvEimA2JfmnCw&pid=ImgRaw&r=0' }
+    { name: 'Snake Plant', price: 800, img: 'https://therubyplants.com.au/wp-content/uploads/2024/06/Snake-Plant-Superba-Sansevieria-Trifasciata-20cm-pot-1181x2048.jpg' }
 ];
 
 const container = document.getElementById('plants');
@@ -323,19 +317,35 @@ plantList.forEach(p => {
     </div>`;
 });
 
-function openImage(src){
-    document.getElementById('imgPopup').style.display='block';
-    document.getElementById('popupImg').src=src;
+let selectedPlant = {};
+
+function buyNow(name, price) {
+    selectedPlant = { name, price };
+    document.getElementById('plant').innerText = name + ' - NPR ' + price;
+    document.getElementById('amount').value = price;
+    document.getElementById('checkoutModal').style.display = 'block';
 }
 
-function closeImage(){
-    document.getElementById('imgPopup').style.display='none';
+function closeModal() {
+    document.getElementById('checkoutModal').style.display = 'none';
 }
 
-function openWhatsApp(){
-    window.open("https://wa.me/9779843365880");
+function placeOrder() {
+    let name = document.getElementById('name').value;
+    let phone = document.getElementById('phone').value;
+    let payment = document.getElementById('payment').value;
+    let amount = document.getElementById('amount').value;
+
+    if (!name || !phone || !payment || !amount) {
+        alert("Please fill all details");
+        return;
+    }
+
+    let msg = `Order:%0APlant:${selectedPlant.name}%0AAmount:${amount}%0APayment:${payment}%0AName:${name}%0APhone:${phone}`;
+    window.open(`https://wa.me/9779843365880?text=${msg}`);
 }
-    function searchPlant() {
+
+function searchPlant() {
     let input = document.getElementById('search').value.toLowerCase();
     let cards = document.querySelectorAll('.card');
 
@@ -344,6 +354,20 @@ function openWhatsApp(){
         card.style.display = name.includes(input) ? 'block' : 'none';
     });
 }
+
+function openWhatsApp(){
+    window.open("https://wa.me/9779843365880");
+}
+
+function openMap(){
+    window.open("https://www.google.com/maps?q=27.723015149068242,85.3041695460239");
+}
+
+function openImage(src){
+    document.getElementById('imgPopup').style.display='block';
+    document.getElementById('popupImg').src=src;
+}
+
 </script>
 
 </body>
