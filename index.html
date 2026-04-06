@@ -349,6 +349,10 @@ function searchPlant() {
             cards[i].innerText.toLowerCase().includes(input) ? '' : 'none';
     }
 }
+    function openWhatsApp() {
+    let message = "Hello Swaa Nepal! I would like to inquire about your plants 🌱";
+    window.open(`https://wa.me/9779843365880?text=${encodeURIComponent(message)}`, "_blank");
+}
 </script>
 <div class="whatsapp-chat" onclick="openWhatsApp()">
     <img src="https://cdn-icons-png.flaticon.com/512/733/733585.png" alt="WhatsApp">
